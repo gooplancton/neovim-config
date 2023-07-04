@@ -128,16 +128,15 @@ require('lazy').setup({
       end,
     },
   },
-
   {
-    -- Theme inspired by Atom
-    'navarasu/onedark.nvim',
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme 'onedark'
-    end,
+      "folke/tokyonight.nvim",
+      lazy = false,
+      priority = 1000,
+      opts = {},
+      config = function()
+        vim.cmd[[colorscheme tokyonight]]
+      end
   },
-
   {
     -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
@@ -145,8 +144,8 @@ require('lazy').setup({
     opts = {
       options = {
         icons_enabled = false,
-        theme = 'onedark',
-        component_separators = '|',
+        theme = 'tokyonight',
+        component_separators = '>',
         section_separators = '',
       },
     },
@@ -272,6 +271,10 @@ vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
+-- Exit insert mode
+vim.keymap.set('i', "jj",  "<esc>", { silent = true })
+vim.keymap.set('i', "jk",  "<esc>", { silent = true })
+
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
 local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
@@ -285,6 +288,9 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 -- Setup autosave
 require("auto-save").setup({})
+
+-- Setup theme
+require("tokyonight").setup({})
 
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
@@ -389,11 +395,14 @@ require('nvim-treesitter.configs').setup {
   },
 }
 
+-- Nvim-tree keymaps
+vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { desc = "Toggle file tree"})
+
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
+vim.keymap.set('n', '<leader>ld', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
+vim.keymap.set('n', '<leader>ll', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
 
 -- [[ Configure LSP ]]
 --  This function gets run when an LSP connects to a particular buffer.
@@ -463,12 +472,14 @@ local servers = {
 
 -- Setup bufferline
 require("bufferline").setup{}
+vim.keymap.set("n", "H", ":BufferLineCyclePrev<CR>", { desc = "Previous tab" })
+vim.keymap.set("n", "L", ":BufferLineCycleNext<CR>", { desc = "Previous tab" })
 
 -- Setup neovim lua configuration
 require('neodev').setup()
 
 -- Setup nvim-tree
--- disable netrw at the very start of your init.lua
+-- disable netrw at the very start of your init.lua:
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 require("nvim-tree").setup()
