@@ -471,9 +471,28 @@ local servers = {
 }
 
 -- Setup bufferline
-require("bufferline").setup{}
-vim.keymap.set("n", "H", ":BufferLineCyclePrev<CR>", { desc = "Previous tab" })
-vim.keymap.set("n", "L", ":BufferLineCycleNext<CR>", { desc = "Previous tab" })
+require("bufferline").setup ({
+  options = {
+    offsets = {
+      {
+          filetype = "NvimTree",
+          text = "File Explorer",
+          highlight = "Directory",
+          separator = true -- use a "true" to enable the default, or set your own character
+      }
+    }
+  }
+})
+
+vim.keymap.set("n", "H", ":BufferLineCyclePrev<CR>", { desc = "Previous buffer" })
+vim.keymap.set("n", "L", ":BufferLineCycleNext<CR>", { desc = "Previous buffer" })
+vim.keymap.set("n", "<leader>c", ":bd<CR>", { desc = "Close buffer" })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Right window" })
+vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Left window" })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Up window" })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Down window" })
+vim.keymap.set("n", "<C-c>", "<C-w>q", { desc = "Close window" })
+
 
 -- Setup neovim lua configuration
 require('neodev').setup()
