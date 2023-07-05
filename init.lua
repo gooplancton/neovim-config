@@ -113,14 +113,6 @@ require('lazy').setup({
     -- Adds git releated signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
-      -- See `:help gitsigns.txt`
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
       on_attach = function(bufnr)
         vim.keymap.set('n', '<leader>gp', require('gitsigns').prev_hunk, { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
         vim.keymap.set('n', '<leader>gn', require('gitsigns').next_hunk, { buffer = bufnr, desc = '[G]o to [N]ext Hunk' })
@@ -134,7 +126,7 @@ require('lazy').setup({
       priority = 1000,
       opts = {},
       config = function()
-        vim.cmd[[colorscheme tokyonight]]
+        vim.cmd[[colorscheme tokyonight-moon]]
       end
   },
   {
@@ -145,7 +137,7 @@ require('lazy').setup({
       options = {
         icons_enabled = false,
         theme = 'tokyonight',
-        component_separators = '>',
+        component_separators = ' ',
         section_separators = '',
       },
     },
@@ -196,8 +188,17 @@ require('lazy').setup({
   -- require 'kickstart.plugins.autoformat',
   -- require 'kickstart.plugins.debug',
   
-  -- Auto save
   { "Pocco81/auto-save.nvim" },
+  { "mbbill/undotree" },
+  { 'mg979/vim-visual-multi' },
+  { "windwp/nvim-spectre" },
+  {
+    "folke/trouble.nvim",
+    cmd = "TroubleToggle",
+  },
+  { 'rainbowhxch/accelerated-jk.nvim' },
+  { "nacro90/numb.nvim" },
+  { 'akinsho/toggleterm.nvim', version = "*", config = true },
 
   -- NOTE: The import below automatically adds your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
@@ -257,6 +258,7 @@ vim.o.timeoutlen = 300
 
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
+vim.o.pumheight = 10
 
 -- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
@@ -268,8 +270,8 @@ vim.o.termguicolors = true
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
 -- Remap for dealing with word wrap
-vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
-vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+vim.keymap.set('n', 'k', "<Plug>(accelerated_jk_gk)", { silent = true })
+vim.keymap.set('n', 'j', "<Plug>(accelerated_jk_gj)", { silent = true })
 
 -- Exit insert mode
 vim.keymap.set('i', "jj",  "<esc>", { silent = true })
@@ -286,11 +288,16 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
--- Setup autosave
+-- Setups
 require("auto-save").setup({})
-
--- Setup theme
-require("tokyonight").setup({})
+require("tokyonight").setup({
+  style = "moon"
+})
+require("spectre").setup()
+require("accelerated-jk").setup({
+  acceleration_table = { 3, 6, 10, 15, 20, 24, 26, 28, 30 }
+})
+require("numb").setup()
 
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
@@ -314,7 +321,7 @@ require('telescope').load_extension('projects')
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', '<leader>/', function()
+vim.keymap.set('n', '/', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
     winblend = 10,
@@ -323,12 +330,18 @@ vim.keymap.set('n', '<leader>/', function()
 end, { desc = '[/] Fuzzily search in current buffer' })
 
 vim.keymap.set('n', '<leader>gf', require('telescope.builtin').git_files, { desc = 'Search [G]it [F]iles' })
-vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+vim.keymap.set('n', '<leader><space>', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
 vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
-vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
+vim.keymap.set('n', '<leader>f', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 
+-- Terminal keymaps
+vim.keymap.set('n', '<C-\\>', ':ToggleTerm direction=float<CR>', { desc = "Toggle floating terminal" })
+vim.keymap.set('n', '<leader>tl>', ':ToggleTerm direction=vertical<CR>', { desc = "Toggle vertical terminal" })
+vim.keymap.set('n', '<leader>tj', ':ToggleTerm direction=horizontal<CR>', { desc = "Toggle horizontal terminal" })
+vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { desc = "Toggle terminal" })
+vim.keymap.set('t', '<C-\\>', '<C-\\><C-n>:ToggleTerm<CR>', { desc = "Toggle terminal" })
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
@@ -423,7 +436,7 @@ local on_attach = function(_, bufnr)
 
   nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
   nmap('<leader>la', vim.lsp.buf.code_action, '[C]ode [A]ction')
-  nmap('<leader>lf', vim.lsp.buf.format, '[C]ode [A]ction')
+  nmap('<leader>lf', vim.lsp.buf.format, '[F]ormat')
 
   nmap('gd', vim.lsp.buf.definition, '[G]oto [D]efinition')
   nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
@@ -567,9 +580,13 @@ cmp.setup {
     end, { 'i', 's' }),
   },
   sources = {
-    { name = 'nvim_lsp' },
+    { name = 'nvim_lsp' },  
     { name = 'luasnip' },
   },
+  window = {
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered()
+  }
 }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
