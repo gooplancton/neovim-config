@@ -116,7 +116,7 @@ require('lazy').setup({
       on_attach = function(bufnr)
         vim.keymap.set('n', '<leader>gp', require('gitsigns').prev_hunk, { buffer = bufnr, desc = '[G]o to [P]revious Hunk' })
         vim.keymap.set('n', '<leader>gn', require('gitsigns').next_hunk, { buffer = bufnr, desc = '[G]o to [N]ext Hunk' })
-        vim.keymap.set('n', '<leader>ph', require('gitsigns').preview_hunk, { buffer = bufnr, desc = '[P]review [H]unk' })
+        vim.keymap.set('n', '<leader>gh', require('gitsigns').preview_hunk, { buffer = bufnr, desc = '[G]it Preview [H]unk' })
       end,
     },
   },
@@ -199,6 +199,15 @@ require('lazy').setup({
   { 'rainbowhxch/accelerated-jk.nvim' },
   { "nacro90/numb.nvim" },
   { 'akinsho/toggleterm.nvim', version = "*", config = true },
+  { 'f-person/git-blame.nvim' },
+  { 'kazhala/close-buffers.nvim' },
+  {
+    "kdheepak/lazygit.nvim",
+    -- optional for floating window border decoration
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+    },
+  },
 
   -- NOTE: The import below automatically adds your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
@@ -214,7 +223,7 @@ require('lazy').setup({
 
 -- Neovide config
 if vim.g.neovide then
-  vim.o.guifont = "CaskaydiaCove Nerd Font Mono:h16"
+  vim.o.guifont = "CaskaydiaCove Nerd Font Mono:h14"
   vim.g.neovide_cursor_vfx_mode = "railgun"
   vim.g.neovide_cursor_vfx_particle_density = 10.0
 end
@@ -340,7 +349,6 @@ vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { de
 vim.keymap.set('n', '<C-\\>', ':ToggleTerm direction=float<CR>', { desc = "Toggle floating terminal" })
 vim.keymap.set('n', '<leader>tl>', ':ToggleTerm direction=vertical<CR>', { desc = "Toggle vertical terminal" })
 vim.keymap.set('n', '<leader>tj', ':ToggleTerm direction=horizontal<CR>', { desc = "Toggle horizontal terminal" })
-vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', { desc = "Toggle terminal" })
 vim.keymap.set('t', '<C-\\>', '<C-\\><C-n>:ToggleTerm<CR>', { desc = "Toggle terminal" })
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
@@ -499,12 +507,17 @@ require("bufferline").setup ({
 
 vim.keymap.set("n", "H", ":BufferLineCyclePrev<CR>", { desc = "Previous buffer" })
 vim.keymap.set("n", "L", ":BufferLineCycleNext<CR>", { desc = "Previous buffer" })
-vim.keymap.set("n", "<leader>c", ":bd<CR>", { desc = "Close buffer" })
+vim.keymap.set("n", "<leader>c", ":BDelete this<CR>", { desc = "Close buffer" })
+vim.keymap.set("n", "<leader>C", ":BWipeout other<CR>", { desc = "Close all other buffers" })
+vim.keymap.set({"n", "v"}, "<leader>p", ":TroubleToggle<CR>", { desc = "Toggle Trouble" })
 vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Right window" })
 vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Left window" })
 vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Up window" })
 vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Down window" })
 vim.keymap.set("n", "<C-c>", "<C-w>q", { desc = "Close window" })
+
+vim.keymap.set("n", "<leader>G", ":LazyGit<CR>", { desc = "Open LazyGit" })
+vim.keymap.set("n", "<leader>gc", ":LazyGitCurrentFile<CR>", { desc = "Open LazyGit in the current file" })
 
 
 -- Setup neovim lua configuration
@@ -514,7 +527,16 @@ require('neodev').setup()
 -- disable netrw at the very start of your init.lua:
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
-require("nvim-tree").setup()
+require("nvim-tree").setup({
+  on_attach = function(bufnr)
+    api = require("nvim-tree.api")
+    -- default mappings
+    api.config.mappings.default_on_attach(bufnr)
+    -- custom mappings
+    vim.keymap.set('n', 'h', api.node.navigate.parent_close, { buffer = bufnr, noremap = true, silent = true, nowait = true })
+    vim.keymap.set('n', 'l', api.node.open.edit, { buffer = bufnr, noremap = true, silent = true, nowait = true })
+  end
+})
 
 -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
 local capabilities = vim.lsp.protocol.make_client_capabilities()
