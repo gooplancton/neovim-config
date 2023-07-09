@@ -201,6 +201,8 @@ require('lazy').setup({
   { 'akinsho/toggleterm.nvim', version = "*", config = true },
   { 'f-person/git-blame.nvim' },
   { 'kazhala/close-buffers.nvim' },
+  { 'jose-elias-alvarez/null-ls.nvim' },
+  { 'jose-elias-alvarez/typescript.nvim' },
   {
     "kdheepak/lazygit.nvim",
     -- optional for floating window border decoration
@@ -307,6 +309,12 @@ require("accelerated-jk").setup({
   acceleration_table = { 3, 6, 10, 15, 20, 24, 26, 28, 30 }
 })
 require("numb").setup()
+require("typescript").setup({})
+require("null-ls").setup({
+  sources = {
+      require("typescript.extensions.null-ls.code-actions"),
+  }
+})
 
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
