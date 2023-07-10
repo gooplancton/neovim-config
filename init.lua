@@ -137,7 +137,7 @@ require('lazy').setup({
       options = {
         icons_enabled = false,
         theme = 'tokyonight',
-        component_separators = ' ',
+        component_separators = '',
         section_separators = '',
       },
     },
