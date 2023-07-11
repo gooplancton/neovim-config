@@ -309,6 +309,7 @@ require("accelerated-jk").setup({
   acceleration_table = { 3, 6, 10, 15, 20, 24, 26, 28, 30 }
 })
 require("numb").setup()
+require('searchbox').setup()
 require("typescript").setup({})
 require("null-ls").setup({
   sources = {
@@ -338,6 +339,8 @@ require('telescope').load_extension('projects')
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
+vim.keymap.set('n', 'r', ':SearchBoxReplace<CR>')
+vim.keymap.set('v', 'r', ':SearchBoxReplace visual_mode=true<CR>')
 vim.keymap.set('n', '/', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
