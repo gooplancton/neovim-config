@@ -203,6 +203,7 @@ require('lazy').setup({
   { 'kazhala/close-buffers.nvim' },
   { 'jose-elias-alvarez/null-ls.nvim' },
   { 'jose-elias-alvarez/typescript.nvim' },
+  { 'fedepujol/move.nvim' },
   {
     "kdheepak/lazygit.nvim",
     -- optional for floating window border decoration
@@ -226,8 +227,11 @@ require('lazy').setup({
 -- Neovide config
 if vim.g.neovide then
   vim.o.guifont = "CaskaydiaCove Nerd Font Mono:h14"
-  vim.g.neovide_cursor_vfx_mode = "railgun"
+  vim.g.neovide_cursor_vfx_mode = "sonicboom"
   vim.g.neovide_cursor_vfx_particle_density = 10.0
+  vim.g.neovide_scroll_animation_length = 0.3
+  vim.g.neovide_hide_mouse_when_typing = true
+  vim.g.neovide_cursor_animate_in_insert_mode = true
 end
 
 -- Tab is two spaces
@@ -280,9 +284,11 @@ vim.o.termguicolors = true
 -- See `:help vim.keymap.set()`
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
--- Remap for dealing with word wrap
 vim.keymap.set('n', 'k', "<Plug>(accelerated_jk_gk)", { silent = true })
 vim.keymap.set('n', 'j', "<Plug>(accelerated_jk_gj)", { silent = true })
+
+vim.keymap.set('v', 'J', ':MoveBlock(1)<CR>', { noremap = true, silent = true })
+vim.keymap.set('v', 'K', ':MoveBlock(-1)<CR>', { noremap = true, silent = true })
 
 -- Exit insert mode
 vim.keymap.set('i', "jj",  "<esc>", { silent = true })
@@ -613,7 +619,7 @@ cmp.setup {
     end, { 'i', 's' }),
   },
   sources = {
-    { name = 'nvim_lsp' },  
+    { name = 'nvim_lsp' },
     { name = 'luasnip' },
   },
   window = {
