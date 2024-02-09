@@ -4,3 +4,6 @@ test.sh
 nvim
 lazy-lock.json
 lua/startup/themes/secret.lua
+lua/startup/themes/secret2.lua
+lua/startup/themes/secret3.lua
+.DS_Store
