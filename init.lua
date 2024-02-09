@@ -225,8 +225,9 @@ require('lazy').setup({
 -- Neovide config
 if vim.g.neovide then
   vim.o.guifont = "CaskaydiaCove Nerd Font Mono:h14"
-  vim.g.neovide_cursor_vfx_mode = "sonicboom"
+  vim.g.neovide_cursor_vfx_mode = "railgun"
   vim.g.neovide_cursor_vfx_particle_density = 10.0
+  vim.g.neovide_cursor_vfx_particle_phase = 3.0
   vim.g.neovide_scroll_animation_length = 0.3
   vim.g.neovide_hide_mouse_when_typing = true
   vim.g.neovide_cursor_animate_in_insert_mode = true
@@ -362,6 +363,9 @@ vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
 vim.keymap.set('n', '<leader>f', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
+
+vim.keymap.set({ 'n', 'v' }, ',', '0', { silent = true, noremap = true })
+vim.keymap.set({ 'n', 'v' }, ';', '$', { silent = true, noremap = true })
 
 -- Terminal keymaps
 vim.keymap.set('n', '<C-\\>', ':ToggleTerm direction=float<CR>', { desc = "Toggle floating terminal" })
