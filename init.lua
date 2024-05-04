@@ -72,6 +72,8 @@ require('lazy').setup({
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
 
+  { "catppuccin/nvim", name = "catppuccin", priority = 1000, config = function() vim.cmd[[colorscheme catppuccin-mocha]] end  },
+
   -- NOTE: This is where your plugins related to LSP can be installed.
   --  The configuration is done below. Search for lspconfig to find it below.
   {
@@ -116,7 +118,7 @@ require('lazy').setup({
       end,
     },
   },
-  { "rebelot/kanagawa.nvim", config = function() vim.cmd[[colorscheme kanagawa]] end },
+  { "rebelot/kanagawa.nvim" },
   {
       "folke/tokyonight.nvim",
       lazy = false,
@@ -296,15 +298,14 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 -- Setups
 require("auto-save").setup({})
-require("tokyonight").setup({
-  style = "moon"
-})
+-- require("tokyonight").setup({
+--   style = "moon"
+-- })
 require("spectre").setup()
 require("accelerated-jk").setup({
   acceleration_table = { 3, 6, 10, 15, 20, 24, 26, 28, 30 }
 })
 require("numb").setup()
-require('searchbox').setup()
 require("typescript").setup({})
 require("null-ls").setup({
   sources = {
@@ -334,8 +335,6 @@ require('telescope').load_extension('projects')
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', 'r', ':SearchBoxReplace<CR>')
-vim.keymap.set('v', 'r', ':SearchBoxReplace visual_mode=true<CR>')
 vim.keymap.set('n', '/', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
@@ -363,7 +362,7 @@ vim.keymap.set('t', '<C-\\>', '<C-\\><C-n>:ToggleTerm<CR>', { desc = "Toggle ter
 -- See `:help nvim-treesitter`
 require('nvim-treesitter.configs').setup {
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'vimdoc', 'vim' },
+  ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'typescript', 'vimdoc', 'vim', 'java' },
 
   -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
   auto_install = false,
@@ -498,6 +497,10 @@ local servers = {
       telemetry = { enable = false },
     },
   },
+
+  -- jdtls = {
+  --
+  -- }
 }
 
 -- Setup bufferline
@@ -538,7 +541,7 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 require("nvim-tree").setup({
   on_attach = function(bufnr)
-    api = require("nvim-tree.api")
+    local api = require("nvim-tree.api")
     -- default mappings
     api.config.mappings.default_on_attach(bufnr)
     -- custom mappings
@@ -554,7 +557,7 @@ capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
 -- Ensure the servers above are installed
 local mason_lspconfig = require 'mason-lspconfig'
 
-require('java').setup()
+-- require('java').setup()
 
 mason_lspconfig.setup {
   ensure_installed = vim.tbl_keys(servers),
@@ -570,12 +573,27 @@ mason_lspconfig.setup_handlers {
   end,
 }
 
+-- require("lspconfig").dartls.setup({})
+-- require("lspconfig").gleam.setup({})
+
+require("flutter-tools").setup({
+  lsp = {
+    on_attach = on_attach,
+    capabilities = capabilities
+  }
+})
+
 -- [[ Configure nvim-cmp ]]
 -- See `:help cmp`
 local cmp = require 'cmp'
+local luasnip = require 'luasnip'
 
 cmp.setup {
-  snippet = {},
+  snippet = {
+    expand = function(args)
+      luasnip.lsp_expand(args.body)
+    end,
+  },
   mapping = cmp.mapping.preset.insert {
     ['<C-n>'] = cmp.mapping.select_next_item(),
     ['<C-p>'] = cmp.mapping.select_prev_item(),
@@ -603,6 +621,7 @@ cmp.setup {
   },
   sources = {
     { name = 'nvim_lsp' },
+    { name = 'luasnip' },
   },
   window = {
     completion = cmp.config.window.bordered(),
